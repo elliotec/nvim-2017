@@ -36,8 +36,6 @@ Plug 'mattn/emmet-vim'
 Plug 'mattn/webapi-vim'
 " Create gists with :Gist
 Plug 'mattn/gist-vim'
-" Multicolored matching syntax (parens, brackets, etc)
-Plug 'kien/rainbow_parentheses.vim'
 " Better JS highlighting
 Plug 'pangloss/vim-javascript'
 " Better JS libraries highlighting
@@ -75,6 +73,7 @@ Plug 'Raimondi/delimitMate'
 Plug 'tpope/vim-repeat'
 " Supposedly better CSS highlighting
 Plug 'hail2u/vim-css3-syntax'
+" CSS colors highlighted that very color
 Plug 'ap/vim-css-color'
 call plug#end()
 " favorite colorscheme
@@ -99,7 +98,7 @@ set ignorecase
 set noshowmode
 " use spaces for tabs
 set expandtab
-" tab = 2 spaces
+" tab == 2 spaces
 set shiftwidth=2
 set softtabstop=2
 set tabstop=2
@@ -136,7 +135,7 @@ set colorcolumn=80
 " don't skip underscores in words
 set iskeyword-=_
 " code folding by indentation
-set foldmethod=indent
+set foldmethod=syntax
 " fold at column-level
 set foldcolumn=1
 " open at 20 levels deep fold
@@ -146,12 +145,18 @@ hi foldcolumn ctermbg=232
 hi folded ctermbg=232
 hi foldcolumn ctermfg=242
 hi folded ctermfg=242
+" hi Pmenu ctermfg=23 ctermbg=252
+" hi PmenuSel ctermfg=123 ctermbg=242
 "don't hide characters, like json quotes wtf
 let g:vim_json_syntax_conceal = 0
+" autocomplete relative paths from current buffer
+let g:deoplete#file#enable_buffer_path = 1
 "space is leader key
 let mapleader = "\<Space>"
 "faster normal mode from insert mode
 inoremap jj <ESC>
+" do the git dance
+inoremap <leader>gs :Gstatus<CR>
 "faster saving
 nnoremap <leader>w :w<CR>
 "jsx commenting
@@ -179,6 +184,8 @@ nnoremap F :FZF<CR>
 nnoremap <silent> <leader>f :Ag <C-R><C-W><CR>
 "start Ag search
 nnoremap <leader>ag :Ag<space>
+" sorting selection shortcut
+vnoremap <leader>abc :sort<CR>
 "git status
 nnoremap <leader>gs :Gstatus<CR>
 "git commit
@@ -214,13 +221,6 @@ function! <SID>StripTrailingWhitespaces()
     %s/\s\+$//e
     call cursor(l, c)
 endfun
-"enable rainbow colors for parens, squares, and curlies
-au VimEnter * RainbowParenthesesToggle
-au Syntax * RainbowParenthesesLoadRound
-au Syntax * RainbowParenthesesLoadSquare
-au Syntax * RainbowParenthesesLoadBraces
-let g:rbpt_max = 16
-let g:rbpt_loadcmd_toggle = 1
 "markdown spellcheck, wrap text, auto-correct words, and enable pencil
 autocmd bufread,bufnewfile *.md,*.markdown inoremap . .<c-g>u
 autocmd bufread,bufnewfile *.md,*.markdown inoremap ? ?<c-g>u
@@ -293,9 +293,6 @@ function! LightlineLinterOK() abort
   return l:counts.total == 0 ? '✓ ' : ''
 endfunction
 autocmd User ALELint call s:MaybeUpdateLightline()
-let g:ale_fixers = {
-\   'javascript': ['eslint'],
-\}
 " Update and show lightline but only if it's visible (e.g., not in Goyo)
 function! s:MaybeUpdateLightline()
   if exists('#lightline')
